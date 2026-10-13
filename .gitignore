@@ -1,0 +1,45 @@
+## .NET build output
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+## Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+## Rider
+.idea/
+
+## VS Code
+.vscode/
+
+## Test results & coverage
+[Ll]ogs/
+[Tt]est[Rr]esult[s]/
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+coverage.json
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+
+## Publish output
+publish/
+artifacts/
+
+## Build logs
+*.binlog
+
+## OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

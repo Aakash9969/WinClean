@@ -1,0 +1,23 @@
+﻿<Window x:Class="WinClean.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="WinClean"
+        Width="520"
+        Height="280"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E2E">
+    <StackPanel VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+        <TextBlock Text="WinClean"
+                   FontSize="32"
+                   FontWeight="Bold"
+                   Foreground="#CDD6F4"
+                   HorizontalAlignment="Center" />
+        <TextBlock Text="Core scaffold ready (Stage 1): solution, rules.json schema, rule model and loader."
+                   FontSize="12"
+                   Foreground="#A6ADC8"
+                   HorizontalAlignment="Center"
+                   Margin="0,10,0,0"
+                   TextAlignment="Center" />
+    </StackPanel>
+</Window>

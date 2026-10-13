@@ -1,0 +1,138 @@
+{
+  "$schema": "./rules.schema.json",
+  "rules": [
+    {
+      "id": "user-temp",
+      "name": "User temporary files",
+      "category": "System",
+      "description": "Leftovers in your personal temp folder (%TEMP%), typically created by installers and applications. Programs recreate what they need.",
+      "riskLevel": "Safe",
+      "requiresAdmin": false,
+      "paths": [ "%TEMP%" ],
+      "filePattern": "*",
+      "recursive": true
+    },
+    {
+      "id": "windows-temp",
+      "name": "Windows temporary files",
+      "category": "System",
+      "description": "Leftovers in the shared Windows temp folder (%WINDIR%\\Temp).",
+      "riskLevel": "Moderate",
+      "requiresAdmin": true,
+      "paths": [ "%WINDIR%\\Temp" ],
+      "filePattern": "*",
+      "recursive": true
+    },
+    {
+      "id": "windows-update-cache",
+      "name": "Windows Update download cache",
+      "category": "System",
+      "description": "Update installers cached under %WINDIR%\\SoftwareDistribution\\Download. Windows re-downloads anything it still needs, so this is safe to empty.",
+      "riskLevel": "Moderate",
+      "requiresAdmin": true,
+      "paths": [ "%WINDIR%\\SoftwareDistribution\\Download" ],
+      "filePattern": "*",
+      "recursive": true
+    },
+    {
+      "id": "prefetch",
+      "name": "Prefetch data",
+      "category": "System",
+      "description": "Prefetch traces in %WINDIR%\\Prefetch that Windows uses to speed up program launches. Windows rebuilds them, but expect slightly slower first launches after cleaning.",
+      "riskLevel": "Moderate",
+      "requiresAdmin": true,
+      "paths": [ "%WINDIR%\\Prefetch" ],
+      "filePattern": "*.pf",
+      "recursive": false
+    },
+    {
+      "id": "thumbnail-cache",
+      "name": "Thumbnail cache",
+      "category": "System",
+      "description": "Explorer's thumbnail cache databases in %LOCALAPPDATA%\\Microsoft\\Windows\\Explorer. Thumbnails are rebuilt automatically as you browse folders.",
+      "riskLevel": "Safe",
+      "requiresAdmin": false,
+      "paths": [ "%LOCALAPPDATA%\\Microsoft\\Windows\\Explorer" ],
+      "filePattern": "thumbcache_*.db",
+      "recursive": false
+    },
+    {
+      "id": "crash-dumps",
+      "name": "Crash dumps",
+      "category": "System",
+      "description": "Application and kernel crash dumps in %LOCALAPPDATA%\\CrashDumps, %WINDIR%\\Minidump and %WINDIR%\\LiveKernelReports. Frees space, but discards crash evidence you may want for debugging.",
+      "riskLevel": "Moderate",
+      "requiresAdmin": true,
+      "paths": [ "%LOCALAPPDATA%\\CrashDumps", "%WINDIR%\\Minidump", "%WINDIR%\\LiveKernelReports" ],
+      "filePattern": "*",
+      "recursive": true
+    },
+    {
+      "id": "windows-error-reports",
+      "name": "Windows error reports",
+      "category": "System",
+      "description": "Queued and archived Windows Error Reporting data under %PROGRAMDATA%\\Microsoft\\Windows\\WER.",
+      "riskLevel": "Safe",
+      "requiresAdmin": true,
+      "paths": [ "%PROGRAMDATA%\\Microsoft\\Windows\\WER" ],
+      "filePattern": "*",
+      "recursive": true
+    },
+    {
+      "id": "recycle-bin",
+      "name": "Recycle Bin",
+      "category": "System",
+      "description": "Empties the Recycle Bin on all drives through the Windows Shell API. This permanently deletes everything currently in the bin; WinClean never deletes the bin's on-disk folders manually.",
+      "riskLevel": "Moderate",
+      "requiresAdmin": false,
+      "paths": [],
+      "filePattern": null,
+      "recursive": false,
+      "specialTarget": "RecycleBin"
+    },
+    {
+      "id": "chrome-cache",
+      "name": "Google Chrome caches",
+      "category": "Browsers",
+      "description": "Chrome's temporary caches for all local browser profiles. Cookies, passwords, browsing history, open sessions and extensions are never touched.",
+      "riskLevel": "Safe",
+      "requiresAdmin": false,
+      "paths": [
+        "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\*\\Cache",
+        "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\*\\Code Cache",
+        "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\*\\GPUCache"
+      ],
+      "filePattern": "*",
+      "recursive": true
+    },
+    {
+      "id": "edge-cache",
+      "name": "Microsoft Edge caches",
+      "category": "Browsers",
+      "description": "Edge's temporary caches for all local browser profiles. Cookies, passwords, browsing history, open sessions and extensions are never touched.",
+      "riskLevel": "Safe",
+      "requiresAdmin": false,
+      "paths": [
+        "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\*\\Cache",
+        "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\*\\Code Cache",
+        "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\*\\GPUCache"
+      ],
+      "filePattern": "*",
+      "recursive": true
+    },
+    {
+      "id": "firefox-cache",
+      "name": "Mozilla Firefox caches",
+      "category": "Browsers",
+      "description": "Firefox's temporary caches for all local browser profiles. Cookies, passwords, browsing history, open sessions and extensions are never touched.",
+      "riskLevel": "Safe",
+      "requiresAdmin": false,
+      "paths": [
+        "%LOCALAPPDATA%\\Mozilla\\Firefox\\Profiles\\*\\cache2",
+        "%LOCALAPPDATA%\\Mozilla\\Firefox\\Profiles\\*\\startupCache"
+      ],
+      "filePattern": "*",
+      "recursive": true
+    }
+  ]
+}

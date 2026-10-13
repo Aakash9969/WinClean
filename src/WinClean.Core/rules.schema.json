@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "winclean.rules.schema.json",
+  "title": "WinClean rules document",
+  "description": "Schema for WinClean's rules.json. Cleanable targets are fully data-driven: adding a new target requires only a JSON edit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [ "rules" ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "rules": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/rule" }
+    }
+  },
+  "definitions": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "id", "name", "category", "description", "riskLevel", "requiresAdmin", "paths", "recursive" ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique, stable identifier used by settings and history."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable name shown in the review screen."
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Grouping for the category tree, e.g. 'System' or 'Browsers'."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Plain-language explanation shown to the user before anything is deleted."
+        },
+        "riskLevel": {
+          "enum": [ "Safe", "Moderate", "Advanced" ],
+          "description": "Drives the risk badge shown in the review screen."
+        },
+        "requiresAdmin": {
+          "type": "boolean",
+          "description": "True when the rule's roots typically require elevation (e.g. under %WINDIR%)."
+        },
+        "paths": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Root folders to scan. Environment variables (%TEMP%) are expanded by the loader. A '*' segment matches any single directory name and is expanded at scan time."
+        },
+        "filePattern": {
+          "type": [ "string", "null" ],
+          "minLength": 1,
+          "description": "File name pattern, e.g. '*.tmp'. Must not contain path separators. Defaults to '*'."
+        },
+        "recursive": {
+          "type": "boolean",
+          "description": "Also match files in subfolders of each root."
+        },
+        "specialTarget": {
+          "enum": [ "RecycleBin" ],
+          "description": "Built-in special handler. 'RecycleBin' empties the Recycle Bin via the Windows Shell API, never by manual deletion of the bin's on-disk folders."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "required": [ "specialTarget" ] },
+          "then": { "properties": { "paths": { "maxItems": 0 } } }
+        },
+        {
+          "if": { "not": { "required": [ "specialTarget" ] } },
+          "then": { "properties": { "paths": { "minItems": 1 } } }
+        }
+      ]
+    }
+  }
+}
