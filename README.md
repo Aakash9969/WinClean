@@ -145,7 +145,7 @@ Requirements:
 - [Inno Setup 6.3+](https://jrsoftware.org/isinfo.php) — only for building the installer
 
 ```powershell
-git clone https://github.com/YOUR-USERNAME/winclean.git
+git clone https://github.com/Aakash9969/WinClean.git
 cd winclean
 
 dotnet build                                       # warnings are errors in this repo

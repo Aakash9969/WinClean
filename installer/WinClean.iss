@@ -9,9 +9,8 @@
 
 #define MyAppName "WinClean"
 #define MyAppExeName "WinClean.exe"
-#define MyAppPublisher "GitHub9969"
-; TODO: update to your repository URL before publishing a release.
-#define MyAppURL "https://github.com/GitHub9969/winclean"
+#define MyAppPublisher "Aakash9969"
+#define MyAppURL "https://github.com/Aakash9969/WinClean"
 #define PublishDir "../publish/win-x64"
 
 #if FileExists(PublishDir + "/" + MyAppExeName)
