@@ -22,6 +22,9 @@ public partial class CategoryViewModel : ObservableObject
 
     public int TotalFiles => Rules.Sum(rule => rule.FileCount);
 
+    /// <summary>Two-way expansion state for the tree container; categories start expanded.</summary>
+    public bool IsExpanded { get; set; } = true;
+
     [ObservableProperty]
     private bool? _isChecked = true;
 

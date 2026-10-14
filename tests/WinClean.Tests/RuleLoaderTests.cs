@@ -392,6 +392,58 @@ public sealed class RuleLoaderTests : IDisposable
     }
 
     [Fact]
+    public void Load_MissingDefaultChecked_DerivesFromRiskLevel()
+    {
+        string moderate = ValidRule
+            .Replace("\"id\": \"test-rule\"", "\"id\": \"moderate-rule\"")
+            .Replace("\"riskLevel\": \"Safe\"", "\"riskLevel\": \"Moderate\"");
+
+        RuleLoadResult result = new RuleLoader().Load(WriteRules(Wrap(ValidRule, moderate)));
+
+        Assert.False(result.HasErrors);
+        Assert.Equal(2, result.Rules.Count);
+        Assert.True(result.Rules[0].CheckedByDefault);   // Safe -> preselected
+        Assert.False(result.Rules[1].CheckedByDefault); // Moderate -> not preselected
+    }
+
+    [Fact]
+    public void Load_ExplicitDefaultChecked_OverridesRiskLevel()
+    {
+        string body = ValidRule
+            .Replace("\"riskLevel\": \"Safe\"", "\"riskLevel\": \"Moderate\"")
+            .Replace("\"requiresAdmin\": false,", "\"requiresAdmin\": false,\n  \"defaultChecked\": true,");
+
+        RuleLoadResult result = new RuleLoader().Load(WriteRules(Wrap(body)));
+
+        Assert.False(result.HasErrors);
+        Rule rule = Assert.Single(result.Rules);
+        Assert.Equal(RiskLevel.Moderate, rule.RiskLevel);
+        Assert.True(rule.CheckedByDefault);
+    }
+
+    [Fact]
+    public void Load_BundledRules_DefaultSelectionFavorsSafeTargets()
+    {
+        string bundled = Path.Combine(AppContext.BaseDirectory, "rules.json");
+
+        RuleLoadResult result = new RuleLoader().Load(bundled);
+
+        Assert.False(result.HasErrors);
+
+        // Preselected: user temp, Windows temp, thumbnails, error reports, browser caches.
+        string[] checkedByDefault = ["user-temp", "windows-temp", "thumbnail-cache", "windows-error-reports", "chrome-cache", "edge-cache", "firefox-cache"];
+        Assert.All(checkedByDefault, id => Assert.True(
+            result.Rules.Single(rule => rule.Id == id).CheckedByDefault,
+            $"{id} should be checked by default"));
+
+        // Not preselected: update cache, Prefetch, crash dumps, Recycle Bin.
+        string[] uncheckedByDefault = ["windows-update-cache", "prefetch", "crash-dumps", "recycle-bin"];
+        Assert.All(uncheckedByDefault, id => Assert.False(
+            result.Rules.Single(rule => rule.Id == id).CheckedByDefault,
+            $"{id} must not be checked by default"));
+    }
+
+    [Fact]
     public void UserRulesPath_LivesInLocalAppDataWinCleanFolder()
     {
         string expected = Path.Combine(

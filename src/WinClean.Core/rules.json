@@ -19,6 +19,7 @@
       "description": "Leftovers in the shared Windows temp folder (%WINDIR%\\Temp).",
       "riskLevel": "Moderate",
       "requiresAdmin": true,
+      "defaultChecked": true,
       "paths": [ "%WINDIR%\\Temp" ],
       "filePattern": "*",
       "recursive": true

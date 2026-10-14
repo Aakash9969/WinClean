@@ -293,6 +293,8 @@ public partial class CleanerViewModel : ViewModelBase
                 category.Rules.Add(new RuleViewModel(scanResult, category, RecomputeSelection));
             }
 
+            // Derive the category tri-state from the rules' default selections.
+            category.RefreshFromChildren();
             categories.Add(category);
         }
 

@@ -35,6 +35,18 @@ public sealed record Rule
     /// <summary>Also match files in subfolders of each root.</summary>
     public required bool Recursive { get; init; }
 
+    /// <summary>
+    /// Optional override for the review tree's default check state. When null it derives from
+    /// the risk level: Safe rules are preselected, everything else is not.
+    /// </summary>
+    public bool? DefaultChecked { get; init; }
+
+    /// <summary>
+    /// Resolved default selection: the explicit override, or — when absent — checked for Safe
+    /// rules and unchecked for Moderate/Advanced rules.
+    /// </summary>
+    public bool CheckedByDefault => DefaultChecked ?? RiskLevel == RiskLevel.Safe;
+
     /// <summary>When set, the rule is handled by a built-in special handler instead of path scanning (e.g. "RecycleBin").</summary>
     public string? SpecialTarget { get; init; }
 

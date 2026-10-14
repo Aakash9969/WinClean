@@ -209,7 +209,7 @@
                                        FontSize="12"
                                        Foreground="{DynamicResource TextMuted}"
                                        TextWrapping="Wrap"/>
-                            <TextBlock Text="Hover a rule for its description and any scan notes."
+                            <TextBlock Text="Expand a rule to see the exact files it found; hover one for details and scan notes."
                                        FontSize="12"
                                        Foreground="{DynamicResource TextMuted}"
                                        TextWrapping="Wrap"
@@ -223,7 +223,9 @@
                         Background="{DynamicResource CardBackground}"
                         CornerRadius="10"
                         Padding="8,6">
-                    <TreeView ItemsSource="{Binding Categories}">
+                    <TreeView ItemsSource="{Binding Categories}"
+                              VirtualizingStackPanel.IsVirtualizing="True"
+                              VirtualizingStackPanel.VirtualizationMode="Recycling">
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type vm:CategoryViewModel}"
                                                       ItemsSource="{Binding Rules}">
@@ -246,7 +248,8 @@
                                 </StackPanel>
                             </HierarchicalDataTemplate>
 
-                            <DataTemplate DataType="{x:Type vm:RuleViewModel}">
+                            <HierarchicalDataTemplate DataType="{x:Type vm:RuleViewModel}"
+                                                      ItemsSource="{Binding Details}">
                                 <Grid Margin="2,0,0,0"
                                       MinHeight="32"
                                       ToolTip="{Binding ToolTipText}">
@@ -293,6 +296,46 @@
                                                Foreground="{DynamicResource TextMuted}"
                                                VerticalAlignment="Center"/>
                                 </Grid>
+                            </HierarchicalDataTemplate>
+
+                            <!-- Exact file that will be deleted -->
+                            <DataTemplate DataType="{x:Type vm:FileReviewItem}">
+                                <Grid Margin="2,1" MinHeight="22" ToolTip="{Binding Path}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Path}"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource TextSecondary}"
+                                               TextTrimming="CharacterEllipsis"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding SizeBytes, Converter={StaticResource BytesToDisplay}}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource TextMuted}"
+                                               VerticalAlignment="Center"
+                                               Margin="12,0,0,0"/>
+                                </Grid>
+                            </DataTemplate>
+
+                            <!-- Cap indicator for very large rules -->
+                            <DataTemplate DataType="{x:Type vm:MoreFilesItem}">
+                                <TextBlock Text="{Binding Count, StringFormat='… and {0:#,0} more files (not listed)'}"
+                                           FontSize="11"
+                                           FontStyle="Italic"
+                                           Foreground="{DynamicResource TextMuted}"
+                                           Margin="2,3"/>
+                            </DataTemplate>
+
+                            <!-- Scan-time note (e.g. a skipped path and why) -->
+                            <DataTemplate DataType="{x:Type vm:RuleNoteItem}">
+                                <TextBlock Text="{Binding Text}"
+                                           FontSize="11"
+                                           FontStyle="Italic"
+                                           Foreground="{DynamicResource TextMuted}"
+                                           Margin="2,3"
+                                           TextWrapping="Wrap"/>
                             </DataTemplate>
                         </TreeView.Resources>
                     </TreeView>

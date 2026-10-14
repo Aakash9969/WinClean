@@ -61,6 +61,10 @@
           "type": "boolean",
           "description": "Also match files in subfolders of each root."
         },
+        "defaultChecked": {
+          "type": [ "boolean", "null" ],
+          "description": "Checked by default in the review tree. Falls back to true for Safe rules and false for everything else, so risky targets are never preselected."
+        },
         "specialTarget": {
           "enum": [ "RecycleBin" ],
           "description": "Built-in special handler. 'RecycleBin' empties the Recycle Bin via the Windows Shell API, never by manual deletion of the bin's on-disk folders."
