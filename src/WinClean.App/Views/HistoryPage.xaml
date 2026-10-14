@@ -1,0 +1,21 @@
+<UserControl x:Class="WinClean.App.Views.HistoryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                MaxWidth="480">
+        <TextBlock Text="History"
+                   FontSize="26"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,10"/>
+        <TextBlock Text="Every clean you run is recorded locally — space freed, files removed, and anything that was skipped with its reason."
+                   Foreground="{StaticResource TextSecondary}"
+                   TextWrapping="Wrap"
+                   TextAlignment="Center"/>
+        <TextBlock Text="Coming in Stage 5."
+                   Foreground="{StaticResource TextMuted}"
+                   HorizontalAlignment="Center"
+                   Margin="0,14,0,0"/>
+    </StackPanel>
+</UserControl>
