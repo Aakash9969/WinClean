@@ -9,7 +9,7 @@ namespace WinClean.App.Services;
 /// </summary>
 public sealed class ThemeService : IThemeService
 {
-    private const string PaletteUriFormat = "pack://application:,,,/WinClean.App;component/Theme/Palette.{0}.xaml";
+    private const string PaletteUriFormat = "pack://application:,,,/WinClean;component/Theme/Palette.{0}.xaml";
 
     public AppTheme Current { get; private set; } = AppTheme.Dark;
 

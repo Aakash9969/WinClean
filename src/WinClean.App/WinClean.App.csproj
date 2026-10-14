@@ -4,16 +4,22 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <AssemblyName>WinClean</AssemblyName>
     <ApplicationIcon>winclean.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Product>WinClean</Product>
+    <Description>A safe, fast, personal junk cleaner for Windows 10/11. Scan first, review, then clean only what you approve.</Description>
+    <Authors>GitHub9969</Authors>
+    <Copyright>Copyright © 2026 GitHub9969</Copyright>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\WinClean.Core\WinClean.Core.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinClean.Core\WinClean.Core.csproj" />
   </ItemGroup>
 
 </Project>
