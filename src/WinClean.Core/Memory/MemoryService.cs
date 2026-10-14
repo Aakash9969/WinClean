@@ -30,6 +30,13 @@ public sealed class MemoryService : IMemoryService
         "MemCompression",
     };
 
+    /// <summary>
+    /// How long to let the memory manager finish moving trimmed dirty pages to the
+    /// pagefile/standby before reading the after-state — so the freed number is honest
+    /// rather than pessimistic (immediate readings miss pages still being written out).
+    /// </summary>
+    private static readonly TimeSpan MeasureSettleDelay = TimeSpan.FromSeconds(1);
+
     public MemoryInfo GetMemoryInfo()
     {
         MEMORYSTATUSEX status = new()
@@ -90,6 +97,10 @@ public sealed class MemoryService : IMemoryService
                 outcomes.Add(new ProcessTrimOutcome(name, process.Id, false, error));
             }
         }
+
+        // Let the memory manager finish moving trimmed dirty pages out of physical RAM
+        // before measuring, so the freed number is honest instead of pessimistic.
+        cancellationToken.WaitHandle.WaitOne(MeasureSettleDelay);
 
         MemoryInfo after = GetMemoryInfo();
         long freed = Math.Max(0, before.UsedBytes - after.UsedBytes);

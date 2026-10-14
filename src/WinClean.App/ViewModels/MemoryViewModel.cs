@@ -83,7 +83,11 @@ public partial class MemoryViewModel : ViewModelBase
                 result.TrimmedCount,
                 result.SkippedCount);
 
-            StatusText = $"Freed {ByteFormat.Bytes(result.BytesFreed)} — {result.TrimmedCount} process(es) trimmed, {result.SkippedCount} skipped.";
+            string hint = result.SkippedCount > 0 && !IsElevated
+                ? $" Restart elevated to also trim the {result.SkippedCount} skipped process(es)."
+                : string.Empty;
+
+            StatusText = $"Freed {ByteFormat.Bytes(result.BytesFreed)} — {result.TrimmedCount} process(es) trimmed, {result.SkippedCount} skipped.{hint}";
         }
         catch (OperationCanceledException)
         {
