@@ -6,7 +6,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Theme/DarkTheme.xaml"/>
+                <ResourceDictionary Source="Theme/Palette.Dark.xaml"/>
+                <ResourceDictionary Source="Theme/Controls.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BoolToVis"/>

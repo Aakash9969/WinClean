@@ -14,26 +14,26 @@
                        FontSize="22"
                        FontWeight="SemiBold"
                        VerticalAlignment="Center"/>
-            <TextBlock Text="{Binding ScanStatusText}"
+            <TextBlock Text="{Binding StatusText}"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Center"
-                       Foreground="{StaticResource TextSecondary}"
+                       Foreground="{DynamicResource TextSecondary}"
                        MaxWidth="520"
                        TextTrimming="CharacterEllipsis"
-                       ToolTip="{Binding ScanStatusText}"/>
+                       ToolTip="{Binding StatusText}"/>
         </Grid>
 
         <!-- Rule loading errors -->
         <Border DockPanel.Dock="Top"
                 Visibility="{Binding HasLoadErrors, Converter={StaticResource BoolToVis}}"
-                Background="{StaticResource RiskAdvancedBackground}"
-                BorderBrush="{StaticResource RiskAdvancedBrush}"
+                Background="{DynamicResource RiskAdvancedBackground}"
+                BorderBrush="{DynamicResource RiskAdvancedBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
                 Padding="12,8"
                 Margin="0,0,0,14">
             <TextBlock Text="{Binding LoadErrorText}"
-                       Foreground="{StaticResource RiskAdvancedBrush}"
+                       Foreground="{DynamicResource RiskAdvancedBrush}"
                        TextWrapping="Wrap"
                        FontSize="12"/>
         </Border>
@@ -54,7 +54,7 @@
                     </Style>
                 </StackPanel.Style>
                 <Path Data="M12 0.8 L14.5 9.5 L23.2 12 L14.5 14.5 L12 23.2 L9.5 14.5 L0.8 12 L9.5 9.5 Z"
-                      Fill="{StaticResource AccentBrush}"
+                      Fill="{DynamicResource AccentBrush}"
                       Width="44" Height="44"
                       Stretch="Uniform"
                       HorizontalAlignment="Center"
@@ -64,8 +64,8 @@
                            FontWeight="SemiBold"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,10"/>
-                <TextBlock Text="WinClean scans every rule and shows exactly what it found — sizes, file counts and risk levels. Scanning never deletes anything. Nothing is ever removed until you review the results and approve it."
-                           Foreground="{StaticResource TextSecondary}"
+                <TextBlock Text="WinClean scans every enabled rule and shows exactly what it found — sizes, file counts and risk levels. Scanning never deletes anything. Nothing is ever removed until you review the results and confirm it in the clean dialog."
+                           Foreground="{DynamicResource TextSecondary}"
                            TextWrapping="Wrap"
                            TextAlignment="Center"
                            Margin="0,0,0,26"/>
@@ -97,14 +97,48 @@
                            Margin="0,0,0,16"/>
                 <ProgressBar Minimum="0"
                              Maximum="100"
-                             Value="{Binding ScanProgressPercent}"
+                             Value="{Binding ProgressPercent}"
                              Margin="0,0,0,12"/>
-                <TextBlock Text="{Binding ScanStatusText}"
-                           Foreground="{StaticResource TextSecondary}"
+                <TextBlock Text="{Binding StatusText}"
+                           Foreground="{DynamicResource TextSecondary}"
                            TextWrapping="Wrap"
                            TextAlignment="Center"/>
                 <Button Content="Cancel"
                         Command="{Binding CancelScanCommand}"
+                        Width="110"
+                        Margin="0,20,0,0"
+                        HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- CLEANING -->
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        MaxWidth="520">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding State}" Value="Cleaning">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock Text="Cleaning…"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,16"/>
+                <ProgressBar Minimum="0"
+                             Maximum="100"
+                             Value="{Binding ProgressPercent}"
+                             Margin="0,0,0,12"/>
+                <TextBlock Text="{Binding StatusText}"
+                           Foreground="{DynamicResource TextSecondary}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"/>
+                <Button Content="Cancel"
+                        Command="{Binding CancelCleanSelectedCommand}"
                         Width="110"
                         Margin="0,20,0,0"
                         HorizontalAlignment="Center"/>
@@ -130,7 +164,7 @@
 
                 <!-- Summary -->
                 <Border Grid.Row="0"
-                        Background="{StaticResource CardBackground}"
+                        Background="{DynamicResource CardBackground}"
                         CornerRadius="10"
                         Padding="18,12"
                         Margin="0,0,0,14">
@@ -138,46 +172,46 @@
                         <StackPanel>
                             <TextBlock Text="FOUND"
                                        FontSize="11"
-                                       Foreground="{StaticResource TextMuted}"/>
+                                       Foreground="{DynamicResource TextMuted}"/>
                             <TextBlock FontSize="19"
                                        FontWeight="SemiBold"
                                        Margin="0,2,0,0"
                                        Text="{Binding TotalReclaimableBytes, Converter={StaticResource BytesToDisplay}}"/>
                             <TextBlock FontSize="12"
-                                       Foreground="{StaticResource TextMuted}"
+                                       Foreground="{DynamicResource TextMuted}"
                                        Margin="0,2,0,0"
-                                       Text="{Binding TotalFilesFound, StringFormat='{}{0} files'}"/>
+                                       Text="{Binding TotalFilesFound, StringFormat='{}{0:#,0} files'}"/>
                         </StackPanel>
                         <Rectangle Width="1"
-                                   Fill="{StaticResource BorderColor}"
+                                   Fill="{DynamicResource BorderColor}"
                                    Margin="26,2"/>
                         <StackPanel>
                             <TextBlock Text="SELECTED"
                                        FontSize="11"
-                                       Foreground="{StaticResource TextMuted}"/>
+                                       Foreground="{DynamicResource TextMuted}"/>
                             <TextBlock FontSize="19"
                                        FontWeight="SemiBold"
                                        Margin="0,2,0,0"
-                                       Foreground="{StaticResource AccentBrush}"
+                                       Foreground="{DynamicResource AccentBrush}"
                                        Text="{Binding SelectedBytes, Converter={StaticResource BytesToDisplay}}"/>
                             <TextBlock FontSize="12"
-                                       Foreground="{StaticResource TextMuted}"
+                                       Foreground="{DynamicResource TextMuted}"
                                        Margin="0,2,0,0"
                                        Text="{Binding SelectedSummaryText}"/>
                         </StackPanel>
                         <Rectangle Width="1"
-                                   Fill="{StaticResource BorderColor}"
+                                   Fill="{DynamicResource BorderColor}"
                                    Margin="26,2"/>
                         <StackPanel VerticalAlignment="Center"
                                     Margin="10,0,0,0"
                                     MaxWidth="280">
                             <TextBlock Text="Unchecked rules are left untouched."
                                        FontSize="12"
-                                       Foreground="{StaticResource TextMuted}"
+                                       Foreground="{DynamicResource TextMuted}"
                                        TextWrapping="Wrap"/>
                             <TextBlock Text="Hover a rule for its description and any scan notes."
                                        FontSize="12"
-                                       Foreground="{StaticResource TextMuted}"
+                                       Foreground="{DynamicResource TextMuted}"
                                        TextWrapping="Wrap"
                                        Margin="0,2,0,0"/>
                         </StackPanel>
@@ -186,7 +220,7 @@
 
                 <!-- Review tree -->
                 <Border Grid.Row="1"
-                        Background="{StaticResource CardBackground}"
+                        Background="{DynamicResource CardBackground}"
                         CornerRadius="10"
                         Padding="8,6">
                     <TreeView ItemsSource="{Binding Categories}">
@@ -203,11 +237,11 @@
                                                VerticalAlignment="Center"
                                                Margin="10,0,12,0"/>
                                     <TextBlock Text="{Binding TotalBytes, Converter={StaticResource BytesToDisplay}}"
-                                               Foreground="{StaticResource TextSecondary}"
+                                               Foreground="{DynamicResource TextSecondary}"
                                                VerticalAlignment="Center"
                                                Margin="0,0,12,0"/>
-                                    <TextBlock Text="{Binding TotalFiles, StringFormat='{}{0} files'}"
-                                               Foreground="{StaticResource TextMuted}"
+                                    <TextBlock Text="{Binding TotalFiles, StringFormat='{}{0:#,0} files'}"
+                                               Foreground="{DynamicResource TextMuted}"
                                                VerticalAlignment="Center"/>
                                 </StackPanel>
                             </HierarchicalDataTemplate>
@@ -245,18 +279,18 @@
                                     <TextBlock Grid.Column="4"
                                                Text="{Binding NoteCount, StringFormat='{}{0} notes'}"
                                                FontSize="11"
-                                               Foreground="{StaticResource TextMuted}"
+                                               Foreground="{DynamicResource TextMuted}"
                                                VerticalAlignment="Center"
                                                Margin="10,0,0,0"
                                                Visibility="{Binding HasNotes, Converter={StaticResource BoolToVis}}"/>
                                     <TextBlock Grid.Column="6"
                                                Text="{Binding TotalBytes, Converter={StaticResource BytesToDisplay}}"
-                                               Foreground="{StaticResource TextSecondary}"
+                                               Foreground="{DynamicResource TextSecondary}"
                                                VerticalAlignment="Center"
                                                Margin="0,0,14,0"/>
                                     <TextBlock Grid.Column="7"
-                                               Text="{Binding FileCount, StringFormat='{}{0} files'}"
-                                               Foreground="{StaticResource TextMuted}"
+                                               Text="{Binding FileCount, StringFormat='{}{0:#,0} files'}"
+                                               Foreground="{DynamicResource TextMuted}"
                                                VerticalAlignment="Center"/>
                                 </Grid>
                             </DataTemplate>
@@ -273,10 +307,186 @@
                             Command="{Binding ScanCommand}"
                             MinWidth="110"/>
                     <Button Content="Clean selected…"
+                            Command="{Binding CleanSelectedCommand}"
                             Style="{StaticResource PrimaryButton}"
-                            IsEnabled="False"
-                            ToolTip="The clean flow arrives in Stage 5. Scanning and review are read-only."
                             MinWidth="150"
+                            Margin="12,0,0,0"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- SUMMARY -->
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding State}" Value="Summary">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Headline numbers -->
+                <Grid Grid.Row="0" Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource CardBackground}"
+                            CornerRadius="10"
+                            Padding="18,14"
+                            Margin="0,0,7,0">
+                        <StackPanel>
+                            <TextBlock Text="SPACE FREED"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource TextMuted}"/>
+                            <TextBlock FontSize="21"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource RiskSafeBrush}"
+                                       Margin="0,4,0,0"
+                                       Text="{Binding LastCleanResult.TotalBytesFreed, Converter={StaticResource BytesToDisplay}}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1"
+                            Background="{DynamicResource CardBackground}"
+                            CornerRadius="10"
+                            Padding="18,14"
+                            Margin="7,0">
+                        <StackPanel>
+                            <TextBlock Text="FILES REMOVED"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource TextMuted}"/>
+                            <TextBlock FontSize="21"
+                                       FontWeight="SemiBold"
+                                       Margin="0,4,0,0"
+                                       Text="{Binding LastCleanResult.TotalFilesRemoved, StringFormat='{}{0:#,0}'}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2"
+                            Background="{DynamicResource CardBackground}"
+                            CornerRadius="10"
+                            Padding="18,14"
+                            Margin="7,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="FILES SKIPPED"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource TextMuted}"/>
+                            <TextBlock FontSize="21"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource RiskModerateBrush}"
+                                       Margin="0,4,0,0"
+                                       Text="{Binding LastCleanResult.TotalFilesSkipped, StringFormat='{}{0:#,0}'}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Details -->
+                <Border Grid.Row="1"
+                        Background="{DynamicResource CardBackground}"
+                        CornerRadius="10"
+                        Padding="14,10"
+                        MinHeight="0">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top"
+                                   Text="Skipped files and why"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextMuted}"
+                                   Margin="4,0,0,8">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding LastCleanResult.TotalFilesSkipped}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <ItemsControl ItemsSource="{Binding LastCleanResult.SkippedOutcomes}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="2,4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Path}"
+                                                           FontSize="12"
+                                                           Foreground="{DynamicResource TextSecondary}"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           ToolTip="{Binding Path}"
+                                                           MaxWidth="480"
+                                                           VerticalAlignment="Top"/>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Reason}"
+                                                           FontSize="12"
+                                                           Foreground="{DynamicResource TextMuted}"
+                                                           TextWrapping="Wrap"
+                                                           Margin="12,0,0,0"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding LastCleanResult.Rules}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="2,6,0,4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Rule.Name}"
+                                                           FontWeight="SemiBold"
+                                                           FontSize="13"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding BytesFreed, Converter={StaticResource BytesToDisplay}}"
+                                                           Foreground="{DynamicResource RiskSafeBrush}"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,14,0"/>
+                                                <TextBlock Grid.Column="2"
+                                                           Text="{Binding FilesRemoved, StringFormat='{}{0:#,0} removed'}"
+                                                           Foreground="{DynamicResource TextSecondary}"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,14,0"/>
+                                                <TextBlock Grid.Column="3"
+                                                           Text="{Binding FilesSkipped, StringFormat='{}{0} skipped'}"
+                                                           Foreground="{DynamicResource TextMuted}"
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </DockPanel>
+                </Border>
+
+                <!-- Footer -->
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0,14,0,0">
+                    <Button Content="Done"
+                            Command="{Binding CloseSummaryCommand}"
+                            MinWidth="110"/>
+                    <Button Content="Scan again"
+                            Command="{Binding ScanCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            MinWidth="130"
                             Margin="12,0,0,0"/>
                 </StackPanel>
             </Grid>

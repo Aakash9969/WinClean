@@ -7,7 +7,7 @@
         MinWidth="900"
         MinHeight="600"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource BaseBackground}">
+        Background="{DynamicResource BaseBackground}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="230"/>
@@ -15,13 +15,13 @@
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <Border Grid.Column="0" Background="{StaticResource SidebarBackground}">
+        <Border Grid.Column="0" Background="{DynamicResource SidebarBackground}">
             <DockPanel>
                 <!-- Brand -->
                 <StackPanel DockPanel.Dock="Top" Margin="18,22,18,26">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="M12 0.8 L14.5 9.5 L23.2 12 L14.5 14.5 L12 23.2 L9.5 14.5 L0.8 12 L9.5 9.5 Z"
-                              Fill="{StaticResource AccentBrush}"
+                              Fill="{DynamicResource AccentBrush}"
                               Width="18" Height="18"
                               Stretch="Uniform"
                               VerticalAlignment="Center"/>
@@ -33,7 +33,7 @@
                     </StackPanel>
                     <TextBlock Text="Scan first. Delete only what you approve."
                                FontSize="11"
-                               Foreground="{StaticResource TextMuted}"
+                               Foreground="{DynamicResource TextMuted}"
                                Margin="28,4,0,0"
                                TextWrapping="Wrap"/>
                 </StackPanel>
@@ -41,15 +41,15 @@
                 <!-- Footer -->
                 <StackPanel DockPanel.Dock="Bottom" Margin="18,0,18,16">
                     <Border Height="1"
-                            Background="{StaticResource BorderColor}"
+                            Background="{DynamicResource BorderColor}"
                             Margin="0,0,0,12"/>
                     <TextBlock Text="Nothing is ever deleted without your explicit approval."
                                FontSize="11"
-                               Foreground="{StaticResource TextMuted}"
+                               Foreground="{DynamicResource TextMuted}"
                                TextWrapping="Wrap"/>
                     <TextBlock Text="Logs live in %LOCALAPPDATA%\WinClean\logs"
                                FontSize="10"
-                               Foreground="{StaticResource TextMuted}"
+                               Foreground="{DynamicResource TextMuted}"
                                Margin="0,6,0,0"/>
                 </StackPanel>
 
@@ -61,15 +61,15 @@
                             <Style TargetType="Button" BasedOn="{StaticResource NavButton}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsCleanerActive}" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource HoverBackground}"/>
-                                        <Setter Property="TextElement.Foreground" Value="{StaticResource AccentBrush}"/>
+                                        <Setter Property="Background" Value="{DynamicResource HoverBackground}"/>
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
                         <StackPanel Orientation="Horizontal">
                             <Path Data="M12 0.8 L14.5 9.5 L23.2 12 L14.5 14.5 L12 23.2 L9.5 14.5 L0.8 12 L9.5 9.5 Z"
-                                  Fill="{StaticResource TextSecondary}"
+                                  Fill="{DynamicResource TextSecondary}"
                                   Width="16" Height="16"
                                   Stretch="Uniform"
                                   VerticalAlignment="Center"/>
@@ -83,15 +83,15 @@
                             <Style TargetType="Button" BasedOn="{StaticResource NavButton}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsHistoryActive}" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource HoverBackground}"/>
-                                        <Setter Property="TextElement.Foreground" Value="{StaticResource AccentBrush}"/>
+                                        <Setter Property="Background" Value="{DynamicResource HoverBackground}"/>
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
                         <StackPanel Orientation="Horizontal">
                             <Path Data="M2.8,12 A9.2,9.2 0 1 1 21.2,12 A9.2,9.2 0 1 1 2.8,12 M12,12 L12,6.8 M12,12 L15.6,14.4"
-                                  Stroke="{StaticResource TextSecondary}"
+                                  Stroke="{DynamicResource TextSecondary}"
                                   StrokeThickness="1.6"
                                   Fill="Transparent"
                                   StrokeStartLineCap="Round"
@@ -109,8 +109,8 @@
                             <Style TargetType="Button" BasedOn="{StaticResource NavButton}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsSettingsActive}" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource HoverBackground}"/>
-                                        <Setter Property="TextElement.Foreground" Value="{StaticResource AccentBrush}"/>
+                                        <Setter Property="Background" Value="{DynamicResource HoverBackground}"/>
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -119,23 +119,23 @@
                             <Grid Width="16" Height="16" VerticalAlignment="Center">
                                 <Canvas>
                                     <Line X1="1" Y1="4" X2="15" Y2="4"
-                                          Stroke="{StaticResource TextSecondary}" StrokeThickness="1.6"
+                                          Stroke="{DynamicResource TextSecondary}" StrokeThickness="1.6"
                                           StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                                     <Line X1="1" Y1="8" X2="15" Y2="8"
-                                          Stroke="{StaticResource TextSecondary}" StrokeThickness="1.6"
+                                          Stroke="{DynamicResource TextSecondary}" StrokeThickness="1.6"
                                           StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                                     <Line X1="1" Y1="12" X2="15" Y2="12"
-                                          Stroke="{StaticResource TextSecondary}" StrokeThickness="1.6"
+                                          Stroke="{DynamicResource TextSecondary}" StrokeThickness="1.6"
                                           StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                                     <Ellipse Canvas.Left="9" Canvas.Top="2" Width="4" Height="4"
-                                             Fill="{StaticResource SidebarBackground}"
-                                             Stroke="{StaticResource TextSecondary}" StrokeThickness="1.2"/>
+                                             Fill="{DynamicResource SidebarBackground}"
+                                             Stroke="{DynamicResource TextSecondary}" StrokeThickness="1.2"/>
                                     <Ellipse Canvas.Left="4" Canvas.Top="6" Width="4" Height="4"
-                                             Fill="{StaticResource SidebarBackground}"
-                                             Stroke="{StaticResource TextSecondary}" StrokeThickness="1.2"/>
+                                             Fill="{DynamicResource SidebarBackground}"
+                                             Stroke="{DynamicResource TextSecondary}" StrokeThickness="1.2"/>
                                     <Ellipse Canvas.Left="11" Canvas.Top="10" Width="4" Height="4"
-                                             Fill="{StaticResource SidebarBackground}"
-                                             Stroke="{StaticResource TextSecondary}" StrokeThickness="1.2"/>
+                                             Fill="{DynamicResource SidebarBackground}"
+                                             Stroke="{DynamicResource TextSecondary}" StrokeThickness="1.2"/>
                                 </Canvas>
                             </Grid>
                             <TextBlock Text="Settings" Margin="10,0,0,0" VerticalAlignment="Center"/>

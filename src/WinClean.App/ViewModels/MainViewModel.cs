@@ -3,7 +3,10 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace WinClean.App.ViewModels;
 
-/// <summary>The application shell: owns the pages and drives sidebar navigation.</summary>
+/// <summary>
+/// The application shell: owns the pages, drives sidebar navigation, and refreshes pages
+/// that read persisted data when they are shown.
+/// </summary>
 public partial class MainViewModel : ObservableObject
 {
     public MainViewModel(CleanerViewModel cleaner, HistoryViewModel history, SettingsViewModel settings)
@@ -34,6 +37,16 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(IsCleanerActive));
         OnPropertyChanged(nameof(IsHistoryActive));
         OnPropertyChanged(nameof(IsSettingsActive));
+
+        // Pages that read persisted data refresh when they become visible.
+        if (CurrentPage == History)
+        {
+            History.Refresh();
+        }
+        else if (CurrentPage == Settings)
+        {
+            Settings.Refresh();
+        }
     }
 
     [RelayCommand]
