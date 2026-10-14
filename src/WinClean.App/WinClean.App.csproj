@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>WinClean</AssemblyName>
     <ApplicationIcon>winclean.ico</ApplicationIcon>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Product>WinClean</Product>
     <Description>A safe, fast, personal junk cleaner for Windows 10/11. Scan first, review, then clean only what you approve.</Description>
     <Authors>Aakash9969</Authors>

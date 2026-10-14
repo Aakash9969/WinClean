@@ -45,6 +45,8 @@ personal use on your own machines, and it keeps one simple contract:
 - **Settings** — dark/light theme and default-enabled rules, applied instantly and persisted.
 - **Elevation on demand** — administrator rights are requested only when an enabled rule needs
   them, never at startup. WinClean relaunches elevated and picks up right where you left off.
+- **Memory optimizer** — reclaim RAM from running applications by trimming working sets; nothing
+  is terminated, and critical system processes are skipped automatically.
 - **Audit trail** — rolling Serilog logs record every deletion and every skip.
 
 ## Safety model

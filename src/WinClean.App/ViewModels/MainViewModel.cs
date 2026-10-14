@@ -6,17 +6,19 @@ namespace WinClean.App.ViewModels;
 
 /// <summary>
 /// The application shell: owns the pages, drives sidebar navigation, and refreshes pages
-/// that read persisted data when they are shown.
+/// that read live or persisted data when they are shown.
 /// </summary>
 public partial class MainViewModel : ObservableObject
 {
     public MainViewModel(
         CleanerViewModel cleaner,
+        MemoryViewModel memory,
         HistoryViewModel history,
         SettingsViewModel settings,
         IElevationService elevationService)
     {
         Cleaner = cleaner;
+        Memory = memory;
         History = history;
         Settings = settings;
         IsRunningElevated = elevationService.IsElevated;
@@ -24,6 +26,8 @@ public partial class MainViewModel : ObservableObject
     }
 
     public CleanerViewModel Cleaner { get; }
+
+    public MemoryViewModel Memory { get; }
 
     public HistoryViewModel History { get; }
 
@@ -39,6 +43,8 @@ public partial class MainViewModel : ObservableObject
 
     public bool IsCleanerActive => CurrentPage == Cleaner;
 
+    public bool IsMemoryActive => CurrentPage == Memory;
+
     public bool IsHistoryActive => CurrentPage == History;
 
     public bool IsSettingsActive => CurrentPage == Settings;
@@ -46,11 +52,16 @@ public partial class MainViewModel : ObservableObject
     partial void OnCurrentPageChanged(ViewModelBase value)
     {
         OnPropertyChanged(nameof(IsCleanerActive));
+        OnPropertyChanged(nameof(IsMemoryActive));
         OnPropertyChanged(nameof(IsHistoryActive));
         OnPropertyChanged(nameof(IsSettingsActive));
 
-        // Pages that read persisted data refresh when they become visible.
-        if (CurrentPage == History)
+        // Pages that read live or persisted data refresh when they become visible.
+        if (CurrentPage == Memory)
+        {
+            Memory.Refresh();
+        }
+        else if (CurrentPage == History)
         {
             History.Refresh();
         }
@@ -65,6 +76,7 @@ public partial class MainViewModel : ObservableObject
     {
         CurrentPage = target switch
         {
+            "memory" => Memory,
             "history" => History,
             "settings" => Settings,
             _ => Cleaner,

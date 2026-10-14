@@ -7,6 +7,7 @@ using WinClean.App.ViewModels;
 using WinClean.App.Views;
 using WinClean.Core.Cleaning;
 using WinClean.Core.Logging;
+using WinClean.Core.Memory;
 using WinClean.Core.Paths;
 using WinClean.Core.Rules;
 using WinClean.Core.Scanning;
@@ -48,7 +49,9 @@ public partial class App : Application
         services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IElevationService, ElevationService>();
+        services.AddSingleton<IMemoryService, MemoryService>();
         services.AddSingleton<CleanerViewModel>();
+        services.AddSingleton<MemoryViewModel>();
         services.AddSingleton<HistoryViewModel>();
         services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<MainViewModel>();

@@ -15,6 +15,9 @@
             <DataTemplate DataType="{x:Type vm:CleanerViewModel}">
                 <views:CleanerPage/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:MemoryViewModel}">
+                <views:MemoryPage/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:HistoryViewModel}">
                 <views:HistoryPage/>
             </DataTemplate>
