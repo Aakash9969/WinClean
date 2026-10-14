@@ -56,15 +56,15 @@ public sealed class Scanner : IScanner
     {
         if (!string.Equals(rule.SpecialTarget, SpecialTargets.RecycleBin, StringComparison.OrdinalIgnoreCase))
         {
-            return new RuleScanResult(rule, 0, 0, [], [$"Rule '{rule.Id}' uses unknown specialTarget '{rule.SpecialTarget}'."]);
+            return new RuleScanResult(rule, 0, 0, [], [], [$"Rule '{rule.Id}' uses unknown specialTarget '{rule.SpecialTarget}'."]);
         }
 
         RecycleBinEstimate? estimate =
             await Task.Run(() => _recycleBinEstimator.GetEstimate(), cancellationToken).ConfigureAwait(false);
 
         return estimate is null
-            ? new RuleScanResult(rule, 0, 0, [], ["Recycle Bin size could not be determined (Shell API unavailable)."])
-            : new RuleScanResult(rule, estimate.TotalBytes, estimate.ItemCount, [], []);
+            ? new RuleScanResult(rule, 0, 0, [], [], ["Recycle Bin size could not be determined (Shell API unavailable)."])
+            : new RuleScanResult(rule, estimate.TotalBytes, estimate.ItemCount, [], [], []);
     }
 
     private RuleScanResult ScanRule(Rule rule, CancellationToken cancellationToken)
@@ -84,13 +84,21 @@ public sealed class Scanner : IScanner
             notes.Add("No folders matched the configured paths.");
         }
 
+        // Only roots that actually exist are recorded: the cleaner re-validates containment
+        // against these at delete time, and nothing can have been found under a missing root.
+        List<string> scannedRoots = [];
         foreach (string root in roots)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            if (Directory.Exists(root))
+            {
+                scannedRoots.Add(root);
+            }
+
             ScanRoot(rule, root, findings, notes, cancellationToken);
         }
 
-        return new RuleScanResult(rule, findings.Sum(finding => finding.SizeBytes), findings.Count, findings, notes);
+        return new RuleScanResult(rule, findings.Sum(finding => finding.SizeBytes), findings.Count, findings, scannedRoots, notes);
     }
 
     private void ScanRoot(

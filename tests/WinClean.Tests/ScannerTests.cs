@@ -15,43 +15,8 @@ public sealed class ScannerTests : IDisposable
 
     public void Dispose() => _fixture.Dispose();
 
-    private static Rule MakeRule(
-        string id,
-        IReadOnlyList<string> paths,
-        string filePattern = "*",
-        bool recursive = false,
-        string category = "Test",
-        string? specialTarget = null) =>
-        new()
-        {
-            Id = id,
-            Name = id,
-            Category = category,
-            Description = "Test rule.",
-            RiskLevel = RiskLevel.Safe,
-            RequiresAdmin = false,
-            Paths = paths,
-            FilePattern = filePattern,
-            Recursive = recursive,
-            SpecialTarget = specialTarget,
-        };
-
     private static Scanner MakeScanner(PathValidator? validator = null) =>
-        new(validator ?? new PathValidator([]), new FakeEstimator());
-
-    private sealed class FakeEstimator : IRecycleBinEstimator
-    {
-        public RecycleBinEstimate? Estimate { get; set; }
-
-        public RecycleBinEstimate? GetEstimate() => Estimate;
-    }
-
-    private sealed class ProgressRecorder : IProgress<ScanProgress>
-    {
-        public List<ScanProgress> Reports { get; } = [];
-
-        public void Report(ScanProgress value) => Reports.Add(value);
-    }
+        new(validator ?? new PathValidator([]), new FakeRecycleBinEstimator());
 
     [Fact]
     public async Task Scan_RecursiveRule_SumsMatchingFileSizesOnly()
@@ -67,12 +32,13 @@ public sealed class ScannerTests : IDisposable
         _fixture.CreateJunction(@"root\sub\junction", outside); // junction escape attempt
 
         ScanResult result = await MakeScanner().ScanAsync(
-            [MakeRule("r", [root], "*.tmp", recursive: true)]);
+            [TestRules.Make("r", [root], "*.tmp", recursive: true)]);
 
         RuleScanResult ruleResult = Assert.Single(result.Rules);
         Assert.Empty(ruleResult.Notes);
         Assert.Equal(3, ruleResult.FileCount);
         Assert.Equal(400, ruleResult.TotalBytes);
+        Assert.Equal([root], ruleResult.Roots);
 
         Assert.Equal(
             new[] { fileA, fileB, fileC }.OrderBy(path => path, StringComparer.OrdinalIgnoreCase),
@@ -93,7 +59,7 @@ public sealed class ScannerTests : IDisposable
         _fixture.CreateFile(@"root\sub\c.tmp", 50);
 
         ScanResult result = await MakeScanner().ScanAsync(
-            [MakeRule("r", [root], "*.tmp", recursive: false)]);
+            [TestRules.Make("r", [root], "*.tmp", recursive: false)]);
 
         RuleScanResult ruleResult = Assert.Single(result.Rules);
         Assert.Equal(2, ruleResult.FileCount);
@@ -105,12 +71,13 @@ public sealed class ScannerTests : IDisposable
     {
         string missing = Path.Combine(_fixture.Root, "does-not-exist");
 
-        ScanResult result = await MakeScanner().ScanAsync([MakeRule("r", [missing])]);
+        ScanResult result = await MakeScanner().ScanAsync([TestRules.Make("r", [missing])]);
 
         RuleScanResult ruleResult = Assert.Single(result.Rules);
         Assert.Empty(ruleResult.Findings);
         string note = Assert.Single(ruleResult.Notes);
         Assert.Contains("not found", note, StringComparison.Ordinal);
+        Assert.Empty(ruleResult.Roots);
     }
 
     [Fact]
@@ -121,8 +88,8 @@ public sealed class ScannerTests : IDisposable
 
         PathValidator validator = new([new BlockedRoot(protectedRoot, BlockKind.Tree)]);
 
-        ScanResult result = await new Scanner(validator, new FakeEstimator()).ScanAsync(
-            [MakeRule("r", [protectedRoot], recursive: true)]);
+        ScanResult result = await new Scanner(validator, new FakeRecycleBinEstimator()).ScanAsync(
+            [TestRules.Make("r", [protectedRoot], recursive: true)]);
 
         RuleScanResult ruleResult = Assert.Single(result.Rules);
         Assert.Equal(0, ruleResult.FileCount);
@@ -139,12 +106,31 @@ public sealed class ScannerTests : IDisposable
         _fixture.CreateFile(@"profiles\P3\other\z.tmp", 300); // no 'cache' folder: must be ignored
 
         ScanResult result = await MakeScanner().ScanAsync(
-            [MakeRule("r", [Path.Combine(_fixture.Root, "profiles", "*", "cache")], "*.tmp")]);
+            [TestRules.Make("r", [Path.Combine(_fixture.Root, "profiles", "*", "cache")], "*.tmp")]);
 
         RuleScanResult ruleResult = Assert.Single(result.Rules);
         Assert.Equal(2, ruleResult.FileCount);
         Assert.Equal(300, ruleResult.TotalBytes);
-        Assert.All(ruleResult.Findings, finding => Assert.EndsWith("cache", Path.GetDirectoryName(finding.Path), StringComparison.OrdinalIgnoreCase));
+        Assert.All(ruleResult.Findings, finding =>
+            Assert.EndsWith("cache", Path.GetDirectoryName(finding.Path), StringComparison.OrdinalIgnoreCase));
+
+        // The concrete expanded roots must be recorded for delete-time re-validation.
+        Assert.Equal(2, ruleResult.Roots.Count);
+        Assert.All(ruleResult.Roots, root =>
+            Assert.EndsWith("cache", root, StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task Scan_WildcardRootWithoutMatches_AddsNote()
+    {
+        string pattern = Path.Combine(_fixture.Root, "profiles", "*", "cache");
+
+        ScanResult result = await MakeScanner().ScanAsync([TestRules.Make("r", [pattern])]);
+
+        RuleScanResult ruleResult = Assert.Single(result.Rules);
+        Assert.Empty(ruleResult.Findings);
+        string note = Assert.Single(ruleResult.Notes);
+        Assert.Contains("No folders matched", note, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -155,7 +141,7 @@ public sealed class ScannerTests : IDisposable
         string root = _fixture.CreateDirectory("root");
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(
-            () => MakeScanner().ScanAsync([MakeRule("r", [root])], progress: null, cts.Token));
+            () => MakeScanner().ScanAsync([TestRules.Make("r", [root])], progress: null, cts.Token));
     }
 
     [Fact]
@@ -166,10 +152,10 @@ public sealed class ScannerTests : IDisposable
         string root2 = _fixture.CreateDirectory("root2");
         _fixture.CreateFile(@"root2\b.tmp", 50);
 
-        ProgressRecorder recorder = new();
+        ProgressRecorder<ScanProgress> recorder = new();
 
         ScanResult result = await MakeScanner().ScanAsync(
-            [MakeRule("r1", [root1]), MakeRule("r2", [root2])],
+            [TestRules.Make("r1", [root1]), TestRules.Make("r2", [root2])],
             recorder);
 
         Assert.Equal(2, result.TotalFiles);
@@ -202,9 +188,9 @@ public sealed class ScannerTests : IDisposable
 
         ScanResult result = await MakeScanner().ScanAsync(
         [
-            MakeRule("r1", [root1], category: "System"),
-            MakeRule("r2", [root2], category: "Browsers"),
-            MakeRule("r3", [root3], category: "System"),
+            TestRules.Make("r1", [root1], category: "System"),
+            TestRules.Make("r2", [root2], category: "Browsers"),
+            TestRules.Make("r3", [root3], category: "System"),
         ]);
 
         Assert.Equal(175, result.TotalBytes);
@@ -222,8 +208,8 @@ public sealed class ScannerTests : IDisposable
     [Fact]
     public async Task Scan_RecycleBinRule_UsesEstimatorTotals()
     {
-        Rule rule = MakeRule("recycle-bin", [], specialTarget: SpecialTargets.RecycleBin);
-        FakeEstimator estimator = new() { Estimate = new RecycleBinEstimate(123456, 7) };
+        Rule rule = TestRules.Make("recycle-bin", specialTarget: SpecialTargets.RecycleBin);
+        FakeRecycleBinEstimator estimator = new() { Estimate = new RecycleBinEstimate(123456, 7) };
         Scanner scanner = new(PathValidator.CreateDefault(), estimator);
 
         ScanResult result = await scanner.ScanAsync([rule]);
@@ -232,6 +218,7 @@ public sealed class ScannerTests : IDisposable
         Assert.Equal(123456, ruleResult.TotalBytes);
         Assert.Equal(7, ruleResult.FileCount);
         Assert.Empty(ruleResult.Findings);
+        Assert.Empty(ruleResult.Roots);
         Assert.Empty(ruleResult.Notes);
         Assert.Equal(123456, result.TotalBytes);
         Assert.Equal(7, result.TotalFiles);
@@ -240,8 +227,8 @@ public sealed class ScannerTests : IDisposable
     [Fact]
     public async Task Scan_RecycleBinEstimatorUnavailable_AddsNote()
     {
-        Rule rule = MakeRule("recycle-bin", [], specialTarget: SpecialTargets.RecycleBin);
-        FakeEstimator estimator = new() { Estimate = null };
+        Rule rule = TestRules.Make("recycle-bin", specialTarget: SpecialTargets.RecycleBin);
+        FakeRecycleBinEstimator estimator = new() { Estimate = null };
         Scanner scanner = new(PathValidator.CreateDefault(), estimator);
 
         ScanResult result = await scanner.ScanAsync([rule]);

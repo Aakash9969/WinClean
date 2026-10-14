@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using WinClean.Core.Models;
+using WinClean.Core.Special;
 
 namespace WinClean.Tests;
 
@@ -65,5 +67,60 @@ internal sealed class TempFixture : IDisposable
         catch (UnauthorizedAccessException)
         {
         }
+    }
+}
+
+/// <summary>Builds Rule records for tests without touching rules.json.</summary>
+internal static class TestRules
+{
+    public static Rule Make(
+        string id,
+        IReadOnlyList<string>? paths = null,
+        string filePattern = "*",
+        bool recursive = false,
+        string category = "Test",
+        string? specialTarget = null) =>
+        new()
+        {
+            Id = id,
+            Name = id,
+            Category = category,
+            Description = "Test rule.",
+            RiskLevel = RiskLevel.Safe,
+            RequiresAdmin = false,
+            Paths = paths ?? [],
+            FilePattern = filePattern,
+            Recursive = recursive,
+            SpecialTarget = specialTarget,
+        };
+}
+
+/// <summary>Records every progress report so tests can assert on the sequence.</summary>
+internal sealed class ProgressRecorder<T> : IProgress<T>
+{
+    public List<T> Reports { get; } = [];
+
+    public void Report(T value) => Reports.Add(value);
+}
+
+/// <summary>Fake Recycle Bin estimator — no real system location is ever touched.</summary>
+internal sealed class FakeRecycleBinEstimator : IRecycleBinEstimator
+{
+    public RecycleBinEstimate? Estimate { get; set; }
+
+    public RecycleBinEstimate? GetEstimate() => Estimate;
+}
+
+/// <summary>Fake Recycle Bin emptier — records calls instead of emptying anything.</summary>
+internal sealed class FakeRecycleBinEmptier : IRecycleBinEmptier
+{
+    public bool WasCalled { get; private set; }
+
+    public string? ErrorResult { get; set; }
+
+    public string? Empty()
+    {
+        WasCalled = true;
+        return ErrorResult;
     }
 }

@@ -73,6 +73,18 @@ public sealed class PathValidator
     public static PathValidator CreateDefault() => new(GetDefaultBlockedRoots());
 
     /// <summary>
+    /// True when <paramref name="path"/> lies strictly beneath <paramref name="root"/> after
+    /// canonicalization. Purely lexical; the filesystem is never touched.
+    /// </summary>
+    public static bool IsInsideRoot(string path, string root)
+    {
+        ArgumentNullException.ThrowIfNull(path);
+        ArgumentNullException.ThrowIfNull(root);
+
+        return IsInside(Canonicalize(path), Canonicalize(root));
+    }
+
+    /// <summary>
     /// May WinClean clean inside this rule root? The root itself is never deleted — only its contents.
     /// </summary>
     public PathValidationResult ValidateRoot(string root)
