@@ -1,0 +1,65 @@
+<Window x:Class="WinClean.App.Views.ErrorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="WinClean — unexpected error"
+        Width="560"
+        SizeToContent="Height"
+        MaxHeight="600"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BaseBackground}">
+    <DockPanel Margin="24,20,24,20">
+        <!-- Heading -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <Path Data="M12 2 L22.5 20 L1.5 20 Z M12 8.5 L12 14.5 M12 16.8 L12 17.2"
+                  Fill="{DynamicResource RiskAdvancedBrush}"
+                  Stroke="{DynamicResource RiskAdvancedBrush}"
+                  StrokeThickness="1.5"
+                  StrokeStartLineCap="Round"
+                  StrokeEndLineCap="Round"
+                  Width="28" Height="28"
+                  Stretch="Uniform"
+                  VerticalAlignment="Center"/>
+            <TextBlock x:Name="HeadingTextBlock"
+                       Text="Something went wrong"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       Margin="12,0,0,0"/>
+        </StackPanel>
+
+        <!-- Actions -->
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,16,0,0">
+            <Button Content="Copy details"
+                    MinWidth="110"
+                    Click="OnCopyDetailsClick"/>
+            <Button Content="Close"
+                    Style="{StaticResource PrimaryButton}"
+                    MinWidth="110"
+                    Margin="12,0,0,0"
+                    Click="OnCloseClick"/>
+        </StackPanel>
+
+        <!-- Body -->
+        <StackPanel Margin="0,14,0,0">
+            <TextBlock x:Name="MessageTextBlock"
+                       Text=""
+                       Foreground="{DynamicResource TextSecondary}"
+                       TextWrapping="Wrap"/>
+            <TextBlock Text="Details (also written to the log file):"
+                       FontSize="11"
+                       Foreground="{DynamicResource TextMuted}"
+                       Margin="0,12,0,4"/>
+            <TextBox x:Name="DetailsTextBox"
+                     Text=""
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     MaxHeight="240"
+                     VerticalScrollBarVisibility="Auto"
+                     FontSize="11"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

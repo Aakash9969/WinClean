@@ -26,4 +26,24 @@ public sealed class DialogService : IDialogService
         window.ShowDialog();
         return confirmed;
     }
+
+    public ElevationDecision PromptForElevation(IReadOnlyList<string> adminRuleNames)
+    {
+        ElevationPromptViewModel viewModel = new(adminRuleNames);
+        ElevationPromptWindow window = new()
+        {
+            Owner = Application.Current.MainWindow,
+            DataContext = viewModel,
+        };
+
+        ElevationDecision decision = ElevationDecision.Cancel;
+        viewModel.CloseRequested += result =>
+        {
+            decision = result;
+            window.Close();
+        };
+
+        window.ShowDialog();
+        return decision;
+    }
 }

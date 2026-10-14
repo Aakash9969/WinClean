@@ -7,13 +7,14 @@ using WinClean.Core.Models;
 using WinClean.Core.Rules;
 using WinClean.Core.Scanning;
 using WinClean.Core.Storage;
+using ILogger = Serilog.ILogger;
 
 namespace WinClean.App.ViewModels;
 
 /// <summary>
 /// The Cleaner page. Scan first (read-only), review, then clean: deletion runs only on the
 /// checked rules, only after an explicit confirmation dialog, and every clean is written
-/// to the local history.
+/// to the local history. Elevation is requested only when enabled rules need it.
 /// </summary>
 public partial class CleanerViewModel : ViewModelBase
 {
@@ -23,6 +24,8 @@ public partial class CleanerViewModel : ViewModelBase
     private readonly ISettingsStore _settingsStore;
     private readonly IHistoryStore _historyStore;
     private readonly IDialogService _dialogService;
+    private readonly IElevationService _elevationService;
+    private readonly ILogger _logger;
 
     public CleanerViewModel(
         IRuleLoader ruleLoader,
@@ -30,7 +33,9 @@ public partial class CleanerViewModel : ViewModelBase
         ICleaner cleaner,
         ISettingsStore settingsStore,
         IHistoryStore historyStore,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IElevationService elevationService,
+        ILogger logger)
     {
         _ruleLoader = ruleLoader;
         _scanner = scanner;
@@ -38,6 +43,8 @@ public partial class CleanerViewModel : ViewModelBase
         _settingsStore = settingsStore;
         _historyStore = historyStore;
         _dialogService = dialogService;
+        _elevationService = elevationService;
+        _logger = logger;
     }
 
     [ObservableProperty]
@@ -123,6 +130,12 @@ public partial class CleanerViewModel : ViewModelBase
                 return;
             }
 
+            // Admin rights are only requested when an enabled rule needs them — never at startup.
+            if (!HandleElevationForScan(enabledRules))
+            {
+                return;
+            }
+
             // Progress<T> posts to the captured UI context, so the tree can be built safely below.
             Progress<ScanProgress> progress = new(ReportScanProgress);
 
@@ -135,6 +148,13 @@ public partial class CleanerViewModel : ViewModelBase
         catch (OperationCanceledException)
         {
             ScanStatusResult("Scan cancelled.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Scan failed unexpectedly");
+            HasLoadErrors = true;
+            LoadErrorText = $"The scan failed unexpectedly: {ex.Message}";
+            ScanStatusResult("Scan failed.");
         }
     }
 
@@ -149,9 +169,12 @@ public partial class CleanerViewModel : ViewModelBase
             return;
         }
 
+        bool adminNote = approved.Any(scan => scan.Rule.RequiresAdmin) && !_elevationService.IsElevated;
+
         CleanConfirmation confirmation = new(
             SelectedBytes,
             SelectedFiles,
+            adminNote,
             [.. approved.Select(scan => new CleanRuleLine(
                 scan.Rule.Id,
                 scan.Rule.Name,
@@ -186,10 +209,51 @@ public partial class CleanerViewModel : ViewModelBase
         {
             ScanStatusResult("Clean cancelled partway. Run a scan to see the current state again.");
         }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Clean failed unexpectedly");
+            HasLoadErrors = true;
+            LoadErrorText = $"The clean failed unexpectedly: {ex.Message}";
+            StatusText = "Clean failed.";
+        }
     }
 
     [RelayCommand]
     private void CloseSummary() => State = CleanerState.Idle;
+
+    /// <summary>
+    /// Shows the elevation prompt when enabled rules need admin rights. Returns false when the
+    /// scan should be aborted (user cancelled, or the app is relaunching elevated).
+    /// </summary>
+    private bool HandleElevationForScan(List<Rule> enabledRules)
+    {
+        List<Rule> adminRules = [.. enabledRules.Where(rule => rule.RequiresAdmin)];
+        if (adminRules.Count == 0 || _elevationService.IsElevated)
+        {
+            return true;
+        }
+
+        ElevationDecision decision = _dialogService.PromptForElevation([.. adminRules.Select(rule => rule.Name)]);
+        switch (decision)
+        {
+            case ElevationDecision.Cancel:
+                ScanStatusResult("Scan cancelled.");
+                return false;
+
+            case ElevationDecision.Elevate:
+                StatusText = "Restarting with administrator rights…";
+                if (_elevationService.TryRelaunchElevated("--scan"))
+                {
+                    // This instance is shutting down; the elevated one auto-starts the scan.
+                    return false;
+                }
+
+                StatusText = "Elevation was not granted — continuing without administrator rights.";
+                break;
+        }
+
+        return true;
+    }
 
     private void ScanStatusResult(string message)
     {

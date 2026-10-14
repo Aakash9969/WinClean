@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using WinClean.App.Services;
 
 namespace WinClean.App.ViewModels;
 
@@ -9,11 +10,16 @@ namespace WinClean.App.ViewModels;
 /// </summary>
 public partial class MainViewModel : ObservableObject
 {
-    public MainViewModel(CleanerViewModel cleaner, HistoryViewModel history, SettingsViewModel settings)
+    public MainViewModel(
+        CleanerViewModel cleaner,
+        HistoryViewModel history,
+        SettingsViewModel settings,
+        IElevationService elevationService)
     {
         Cleaner = cleaner;
         History = history;
         Settings = settings;
+        IsRunningElevated = elevationService.IsElevated;
         _currentPage = cleaner;
     }
 
@@ -22,6 +28,11 @@ public partial class MainViewModel : ObservableObject
     public HistoryViewModel History { get; }
 
     public SettingsViewModel Settings { get; }
+
+    /// <summary>True when the app runs with administrator rights (after an elevation restart).</summary>
+    public bool IsRunningElevated { get; }
+
+    public string WindowTitle => IsRunningElevated ? "WinClean (Administrator)" : "WinClean";
 
     [ObservableProperty]
     private ViewModelBase _currentPage;

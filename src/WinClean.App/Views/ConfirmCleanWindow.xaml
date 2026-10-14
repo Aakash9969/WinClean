@@ -8,6 +8,9 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource BaseBackground}">
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
+    </Window.InputBindings>
     <Window.Resources>
         <conv:BytesToDisplayConverter x:Key="BytesToDisplay"/>
     </Window.Resources>
@@ -43,6 +46,16 @@
                     Margin="0,16,0,0">
                 <TextBlock Text="Files are deleted permanently — they are not moved to the Recycle Bin. Anything locked, protected or in use is skipped automatically and listed with the reason."
                            Foreground="{DynamicResource RiskAdvancedBrush}"
+                           TextWrapping="Wrap"
+                           FontSize="12"/>
+            </Border>
+            <Border Visibility="{Binding Confirmation.ShowAdminNote, Converter={StaticResource BoolToVis}}"
+                    Background="{DynamicResource RiskModerateBackground}"
+                    CornerRadius="8"
+                    Padding="12,8"
+                    Margin="0,8,0,0">
+                <TextBlock Text="Some selected rules need administrator rights — files that require elevation will be skipped automatically."
+                           Foreground="{DynamicResource RiskModerateBrush}"
                            TextWrapping="Wrap"
                            FontSize="12"/>
             </Border>

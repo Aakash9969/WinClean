@@ -64,7 +64,7 @@
                            FontWeight="SemiBold"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,10"/>
-                <TextBlock Text="WinClean scans every enabled rule and shows exactly what it found — sizes, file counts and risk levels. Scanning never deletes anything. Nothing is ever removed until you review the results and confirm it in the clean dialog."
+                <TextBlock Text="WinClean scans every enabled rule and shows exactly what it found — sizes, file counts and risk levels. Scanning never deletes anything. Nothing is ever removed until you review the results and confirm it in the clean dialog. Administrator rights are requested only when an enabled rule needs them."
                            Foreground="{DynamicResource TextSecondary}"
                            TextWrapping="Wrap"
                            TextAlignment="Center"
