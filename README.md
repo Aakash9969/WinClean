@@ -198,14 +198,20 @@ winclean/
 
 ## Screenshots
 
-> Screenshots coming soon — drop PNGs into `docs/screenshots/` and embed them here.
+### Cleaner — review before cleaning
+![Cleaner review screen with the category tree, risk badges and selected totals](docs/screenshots/cleaner-review.png)
+
+### Cleaner — getting started
+![Cleaner start screen with the scan call to action](docs/screenshots/cleaner-idle.png)
+
+**Still to capture** — take them with `Win+Shift+S`, save the PNGs into `docs/screenshots/`, then embed with `![Description](docs/screenshots/<file>.png)`:
 
 | View | Planned file |
 |---|---|
-| Cleaner — review tree with risk badges | `docs/screenshots/cleaner.png` *(TODO)* |
 | Clean confirmation dialog | `docs/screenshots/confirm.png` *(TODO)* |
 | Summary with skipped files and reasons | `docs/screenshots/summary.png` *(TODO)* |
 | Settings — theme and default-enabled rules | `docs/screenshots/settings.png` *(TODO)* |
+| Memory page | `docs/screenshots/memory.png` *(TODO)* |
 
 ## Roadmap
 
